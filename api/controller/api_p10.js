@@ -99,7 +99,7 @@ exports.get_input_field = function (req, res) {
 exports.marius_test = function (req, res) {
     setTimeout(function() {
         res.send(200);
-    }, 30000);
+    }, 80000);
 };
 
 
