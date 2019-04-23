@@ -20,9 +20,10 @@ var session = require("express-session");
 
 var routes = require("./routes/index");
 var users = require("./routes/users");
+var api = require("./api/route/api");
 
 var configDB = require("./config/database.js");
-mongoose.connect('mongodb://mariusukr:A-P10project-@ds151523.mlab.com:51523/heroku_6jkcdgb5');
+mongoose.connect('mongodb://P10:P10Pass1@ds151523.mlab.com:51523/heroku_6jkcdgb5');
 
 var cors = require('cors')
 
@@ -52,6 +53,7 @@ require("./config/passport")(passport);
 
 app.use("/", routes);
 app.use("/users", users);
+app.use("/api", api);
 
 app.use(function(req, res, next) {
   var err = new Error("Not Found");
@@ -77,11 +79,16 @@ app.use(function(err, req, res, next) {
   });
 });
 
+//Changed the path to ones i needed
+// original values are commented out
 var credentials = {
-  key: fs.readFileSync("./insecure-key.pem"),
-  cert: fs.readFileSync("./insecure-certificate.pem")
+  key: fs.readFileSync("./bin/insecure-key.pem"),
+  cert: fs.readFileSync("./bin/insecure-certificate.pem")
+  // key: fs.readFileSync("./insecure-key.pem"),
+  // cert: fs.readFileSync("./insecure-certificate.pem")
 };
+
 var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(4433);
+httpsServer.listen(5000);
 
 module.exports = app;

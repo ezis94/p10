@@ -4,7 +4,7 @@ var router = express.Router();
 var u2f = require("u2f");
 var https = require("https");
 var randomstring = require("randomstring");
-var cmd= require('node-cmd');
+var cmd = require('node-cmd');
 var request = require('request'); // "Request" library
 var GoogleTokenProvider = require('refresh-token').GoogleTokenProvider;
 var APP_ID = "https://localhost:4433";
@@ -61,41 +61,44 @@ const redirectUriParameters = {
 router.use(express.static('public'));
 
 //Python script
-var pythonPower = function(song_element, i,res) {
+var pythonPower = function (song_element, i, res) {
 
-    if(i<Count_songs){
+    if (i < Count_songs) {
         cmd.get(
-
             //------optional change---------------------------
 
             'C:\\Users\\Edgar\\WebstormProjects\\P9-Keras\\venv\\Scripts\\python.exe C:\\Users\\Edgar\\WebstormProjects\\P9-Keras\\classify.py',
-            function(err, data, stderr){
+            function (err, data, stderr) {
                 var lines = data.split('\n');
 
                 //-----------optional change----------------
-                for(var i = 2; i < lines.length-1; i++) { // i = 2 to outcomment [INFO] messages from Python script
-                    lines[i]=lines[i].replace(/\s\s+/g, ' ');
+                for (var i = 2; i < lines.length - 1; i++) { // i = 2 to outcomment [INFO] messages from Python script
+                    lines[i] = lines[i].replace(/\s\s+/g, ' ');
 
-                    lines[i]=lines[i].replace(" ]","]");
-                    lines[i]=lines[i].substring(1,lines[i].length-2);
+                    lines[i] = lines[i].replace(" ]", "]");
+                    lines[i] = lines[i].substring(1, lines[i].length - 2);
 
                     var anylol = lines[i].split(" ");
 
                     console.log(lines[i]);
                     console.log(anylol[1]);
-                    Song_attr.push([parseFloat(anylol[0].replace(" ","")), parseFloat(anylol[1].replace(" ","")),parseFloat(anylol[2].replace(" ",""))]);
-                    if (i==2)
-                        song_id.push( song_element.seed_song);
+                    Song_attr.push([parseFloat(anylol[0].replace(" ", "")), parseFloat(anylol[1].replace(" ", "")), parseFloat(anylol[2].replace(" ", ""))]);
+                    if (i == 2)
+                        song_id.push(song_element.seed_song);
                     else
-                        song_id.push(song_element.rec_songs[i-2]);
+                        song_id.push(song_element.rec_songs[i - 2]);
                 }
- wer(song_element,i, res);
 
                 console.log(Song_attr);
 
                 var recomends = [];
-                for(var j =1;j<=Count_songs;j++){
-                    recomends[j-1]={id:song_id[j], valence:Song_attr[j][0], depth:Song_attr[j][1], arousal:Song_attr[j][2]};
+                for (var j = 1; j <= Count_songs; j++) {
+                    recomends[j - 1] = {
+                        id: song_id[j],
+                        valence: Song_attr[j][0],
+                        depth: Song_attr[j][1],
+                        arousal: Song_attr[j][2]
+                    };
                     // console.log("pls"+recomends);
                 }
                 //KNN------------------------------------------------------------ here
@@ -106,56 +109,51 @@ var pythonPower = function(song_element, i,res) {
 
                 var seedSong = {
                     //id:song_id[Count_songs],
-                    valence:Song_attr[0][0],
-                    depth:Song_attr[0][1],
-                    arousal:Song_attr[0][2]
+                    valence: Song_attr[0][0],
+                    depth: Song_attr[0][1],
+                    arousal: Song_attr[0][2]
                 };
-                console.log("ok"+seedSong);
+                console.log("ok" + seedSong);
 
-                var results=knn(seedSong, recomends, options);
-                console.log("These are results btw : "+ JSON.stringify(results));
-                res.send(JSON.stringify({results:  results}));
-
-
-
-
+                var results = knn(seedSong, recomends, options);
+                console.log("These are results btw : " + JSON.stringify(results));
+                res.send(JSON.stringify({results: results}));
+            }
+        );
+    }
     console.log(Song_attr);
     console.log("finished python")
 }
 
+
 // listen for requests :)
 
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
     if (!req.cookies.userid) {
         res.cookie("userid", Math.floor(Math.random() * 100000));
     }
-    res.render("index", { title: "Express" });
+    res.render("index", {title: "Express"});
 });
 
-router.get("/login", function(req, res, next) {
-    res.render("login.ejs", { message: req.flash("loginMessage") });
+router.get("/login", function (req, res, next) {
+    res.render("login.ejs", {message: req.flash("loginMessage")});
 });
 
 
-
-
-
-router.get("/signup", function(req, res) {
-    res.render("signup.ejs", { message: req.flash("signupMessage") });
+router.get("/signup", function (req, res) {
+    res.render("signup.ejs", {message: req.flash("signupMessage")});
 });
 
-router.get("/new_profile", isLoggedIn, function(req, res) {
+router.get("/new_profile", isLoggedIn, function (req, res) {
     console.log(req.user);
     res.render("new_profile.ejs", {user: req.user});
 
 });
 
-router.get("/logout", function(req, res) {
+router.get("/logout", function (req, res) {
     req.logout();
     res.redirect("/");
 });
-
-
 
 
 router.post(
@@ -175,10 +173,6 @@ router.post(
         failureFlash: true
     })
 );
-
-
-
-
 
 // google ---------------------------------
 
