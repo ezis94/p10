@@ -13,5 +13,6 @@ router.get('/testCases', apicontroller.get_test_case_list);
 router.get('/testSteps', apicontroller.get_test_step_list);
 router.get('/testUsers', apicontroller.get_user_list);
 router.get('/testInput', apicontroller.get_input_field);
-
+router.get('/uselessThing', apicontroller.marius_test);
+router.post('/uselessThing', apicontroller.marius_test);
 module.exports = router;

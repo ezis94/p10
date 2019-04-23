@@ -2,13 +2,12 @@ const mongoose = require('mongoose');
 
 const testCaseSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    test_case_name : { type: String },
+    test_case_name : String,
     created : { type : Date, default: Date.now() },
     steps: [{
         id: { type : Number, required: false, unique: false},
         step: { type: String },
         prefix: { type: String },
-        stepFunction: { type: String }
     }]
 
 },{collection: "TestCases"});
