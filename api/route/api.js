@@ -1,5 +1,6 @@
 const express = require ('express');
 const router = express.Router();
+var passport = require("passport");
 
 const apicontroller = require('../controller/api_p10');
 const patientCheckAuth = require('../middleware/jwt-token-auth');
@@ -15,4 +16,22 @@ router.get('/testUsers', apicontroller.get_user_list);
 router.get('/testInput', apicontroller.get_input_field);
 router.get('/uselessThing', apicontroller.marius_test);
 router.post('/uselessThing', apicontroller.marius_test);
+router.post(
+    "/signup",
+    passport.authenticate("local-signup", {
+        successRedirect: "/",
+        failureRedirect: "/signup",
+        failureFlash: true
+    })
+);
+
+router.post(
+    "/login",
+    passport.authenticate("local-login", {
+        successRedirect: "/",
+        failureRedirect: "/login",
+        failureFlash: true
+    })
+);
+
 module.exports = router;

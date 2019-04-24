@@ -4,7 +4,6 @@ var favicon = require("serve-favicon");
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
-var u2f = require("u2f");
 var https = require("https");
 var fs = require("fs");
 var engines = require("consolidate");
@@ -49,7 +48,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-require("./config/passport")(passport);
+require("./api/config/passport")(passport);
 
 app.use("/", routes);
 app.use("/users", users);
@@ -82,8 +81,8 @@ app.use(function(err, req, res, next) {
 //Changed the path to ones i needed
 // original values are commented out
 var credentials = {
-  key: fs.readFileSync("./bin/insecure-key.pem"),
-  cert: fs.readFileSync("./bin/insecure-certificate.pem")
+  key: fs.readFileSync("./insecure-key.pem"),
+  cert: fs.readFileSync("./insecure-certificate.pem")
   // key: fs.readFileSync("./insecure-key.pem"),
   // cert: fs.readFileSync("./insecure-certificate.pem")
 };

@@ -10,7 +10,7 @@ var mongoose = require("mongoose");
 var bcrypt = require("bcrypt-nodejs");
 var userSchema = mongoose.Schema({
 
-    _id: mongoose.Schema.Types.ObjectId,
+    //_id: mongoose.Schema.Types.ObjectId,
     username:String,
     password:String,
     draftList:[
@@ -41,7 +41,7 @@ userSchema.methods.generateHash = function(password) {
 };
 
 userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.local.password);
+    return bcrypt.compareSync(password, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("users", userSchema);

@@ -103,6 +103,15 @@ exports.marius_test = function (req, res) {
 };
 
 
+exports.get_user_info = function(req, res) {
+    TestCases.find(function (err, data) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        return res.json(data);
+    });
+};
 
 
 
@@ -111,6 +120,7 @@ exports.marius_test = function (req, res) {
 
 
 exports.get_test_case_lists = function (req, res) {
+
     const obj_json = {
         _id: {
             $oid: "5c66a844e7179a27eb6135f1"

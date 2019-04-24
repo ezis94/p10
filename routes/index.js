@@ -159,7 +159,7 @@ router.get("/logout", function (req, res) {
 router.post(
     "/signup",
     passport.authenticate("local-signup", {
-        successRedirect: "/new_profile",
+        successRedirect: "/",
         failureRedirect: "/signup",
         failureFlash: true
     })
@@ -168,7 +168,7 @@ router.post(
 router.post(
     "/login",
     passport.authenticate("local-login", {
-        successRedirect: "/new_profile",
+        successRedirect: "/",
         failureRedirect: "/login",
         failureFlash: true
     })
