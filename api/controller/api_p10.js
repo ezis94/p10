@@ -33,6 +33,21 @@ exports.get_test_case_list = function(req, res) {
         return res.json(data);
     });
 };
+exports.post_save_draft = function(req, res) {
+    Users.findOne({ "_id": req.body.id }, function(err, user) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        console.log(user);
+        //Add the StepList
+        user.draftList = user.draftList.concat({name:req.body.test});
+        user.save(function (err) {
+            if (err) throw err;
+            return res.send("successfully saved");
+        });
+    });
+};
 
 exports.get_test_step_list = function (req, res) {
     res.json({

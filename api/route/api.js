@@ -24,7 +24,6 @@ router.post(
         failureFlash: true
     })
 );
-
 router.post(
     "/login",
     passport.authenticate("local-login", {
@@ -33,5 +32,5 @@ router.post(
         failureFlash: true
     })
 );
-
+router.post('/saveDraft',apicontroller.post_save_draft);
 module.exports = router;
