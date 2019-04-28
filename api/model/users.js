@@ -15,7 +15,6 @@ var userSchema = mongoose.Schema({
     password:String,
     draftList:[
         {
-            id: String,
             name: String,
             step:[
                 {

@@ -132,7 +132,7 @@ router.get("/", function (req, res, next) {
     if (!req.cookies.userid) {
         res.cookie("userid", Math.floor(Math.random() * 100000));
     }
-    res.render("index", {title: "Express"});
+    res.render("index", {title: "Express",user: req.user});
 });
 
 router.get("/login", function (req, res, next) {
