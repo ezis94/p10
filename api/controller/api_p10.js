@@ -2,6 +2,8 @@
 const mongoose = require('mongoose');
 const bcryptjs = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
+const fs = require("fs");
+const cmd = require('node-cmd');
 
 //Models
 const TestCases = require('../model/testCases');
@@ -40,11 +42,64 @@ exports.post_save_draft = function(req, res) {
             return;
         }
         console.log(user);
-        //Add the StepList
-        user.draftList = user.draftList.concat({name:req.body.test});
+        //Add the StepList depends on the namings
+        user.draftList = user.draftList.concat({name:req.body.name, step:req.body.steps});
         user.save(function (err) {
             if (err) throw err;
             return res.send("successfully saved");
+        });
+    });
+};
+
+exports.validate_test = function(req, res) {
+    TestSteps.find( function(err, steps) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        var RNNfile="";
+        var result=[];
+       // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
+        //var DBS= ["somevvhere","Set Volume to number","bole"];
+
+        for (var j=0;j<req.body.teststeps.length;j++)
+        {
+            for (var i=0;i<steps.length;i++)
+            {
+                RNNfile +=req.body.teststeps[j] + ", " + steps[i] + "\n";
+            }
+        }
+        //Add the StepList depends on the namings
+        fs.writeFile("C:\\Users\\ezis94\\Desktop\\test.txt", RNNfile, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+
+            console.log("The file was saved!");
+            cmd.get(
+                //------optional change---------------------------
+
+                'C:\\Users\\Edgar\\WebstormProjects\\P9-Keras\\venv\\Scripts\\python.exe C:\\Users\\Edgar\\WebstormProjects\\P9-Keras\\classify.py',
+                function (err, data, stderr) {
+                    var lines = data.split('\n');
+                    var StepArr=[];
+
+                    //-----------optional change----------------
+                    for (var i = 0; i < lines.length; i++)
+                    {
+                        if(parseFloat(lines[i])<=0.4)
+                    {
+                        StepArr = StepArr.concat({DBStep:steps[i%steps.length], simVal:lines[i]});
+                    }
+                        if (((i+1)%steps.length==0))
+                        {
+                            result = result.concat({userStep:req.body.teststeps[Math.floor(i/steps.length)], stepsInfo:StepArr});
+                            StepArr=[];
+                        }
+                    }
+                    res.json(result);
+                }
+            );
         });
     });
 };
@@ -110,12 +165,6 @@ exports.get_input_field = function (req, res) {
     })
 };
 
-
-exports.marius_test = function (req, res) {
-    setTimeout(function() {
-        res.send(200);
-    }, 80000);
-};
 
 
 exports.get_user_info = function(req, res) {

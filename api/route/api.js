@@ -11,11 +11,7 @@ const patientCheckAuth = require('../middleware/jwt-token-auth');
 
 router.get('/', apicontroller.api);
 router.get('/testCases', apicontroller.get_test_case_list);
-router.get('/testSteps', apicontroller.get_test_step_list);
-router.get('/testUsers', apicontroller.get_user_list);
-router.get('/testInput', apicontroller.get_input_field);
-router.get('/uselessThing', apicontroller.marius_test);
-router.post('/uselessThing', apicontroller.marius_test);
+router.get('/validate',apicontroller.validate_test);
 router.post(
     "/signup",
     passport.authenticate("local-signup", {
@@ -32,5 +28,6 @@ router.post(
         failureFlash: true
     })
 );
+
 router.post('/saveDraft',apicontroller.post_save_draft);
 module.exports = router;
