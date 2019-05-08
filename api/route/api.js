@@ -30,4 +30,7 @@ router.post(
 );
 
 router.post('/saveDraft',apicontroller.post_save_draft);
+router.post('/save',apicontroller.post_save);
+router.post('/deleteTestCase',apicontroller.post_delete_test_case);
+
 module.exports = router;

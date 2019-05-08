@@ -51,6 +51,41 @@ exports.post_save_draft = function(req, res) {
     });
 };
 
+exports.post_save = function(req, res) {
+    TestCases.remove({ "_id": req.body.id }, function(err, obj) {
+        if (err) throw err;
+        console.log(" document deleted");
+        return res.send("successfully deleted");
+
+    });
+};
+
+exports.post_delete_test_case = function(req, res) {
+    TestCases.findOne({ "test_case_name": req.body.name }, function(err, TC) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        if (TC)
+        {
+            res.send("such test case already exists");
+            return;
+        }
+        var _TC = new TestCases();
+        _TC.test_case_name=req.body.name;
+        for (var i=0;i<req.body.steps.lengts;i++)
+        {
+            _TC.steps=_TC.steps.concat({id:req.body.steps[i].id, step:req.body.steps[i].step, prefix:req.body.steps[i].prefix });
+        }
+
+        //Add the StepList depends on the namings
+        _TC.save(function (err) {
+            if (err) throw err;
+            return res.send("successfully saved");
+        });
+    });
+};
+
 exports.validate_test = function(req, res) {
     TestSteps.find( function(err, steps) {
         if (err) {

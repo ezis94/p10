@@ -20,7 +20,7 @@
 const mongoose = require('mongoose');
 
 const testStepSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+    //_id: mongoose.Schema.Types.ObjectId,
     testStep : String,
     variable: [{
        type:String,
