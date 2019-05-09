@@ -5,7 +5,7 @@ const testCaseSchema = mongoose.Schema({
     test_case_name : String,
     created : { type : Date, default: Date.now() },
     steps: [{
-        id: { type : Number, required: false, unique: false},
+       // id: { type : Number, required: false, unique: false},
         step: { type: String },
         prefix: { type: String },
     }]

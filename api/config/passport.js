@@ -34,7 +34,6 @@ module.exports = function(passport) {
                         );
                     }
                     else {
-                        console.log("------------saving user---------");
                         var newUser = new Users();
                         newUser.username = username;
                         newUser.password = newUser.generateHash(password);

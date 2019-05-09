@@ -13,17 +13,7 @@ const Users = require('../model/users');
 
 
 exports.api = function (req, res) {
-    res.json({
-        desciption: 'Welcome to API endpoint',
-        status: 'Success',
-        request: {
-            type: 'GET',
-            url1: 'http://localhost:4000/api/testCases',
-            url2: 'http://localhost:4000/api/testSteps',
-            url3: 'http://localhost:4000/api/testUsers',
-            url4: 'http://localhost:4000/api/testInput'
-        }
-    })
+   res.send(req.user);
 };
 
 exports.get_test_case_list = function(req, res) {
@@ -42,16 +32,53 @@ exports.post_save_draft = function(req, res) {
             return;
         }
         console.log(user);
-        //Add the StepList depends on the namings
-        user.draftList = user.draftList.concat({name:req.body.name, step:req.body.steps});
+        if (req.body.tcID) {
+            for (var i = 0; i < user.draftList.length; i++) {
+                if (user.draftList[i]._id===req.body.tcID)
+                {
+                    user.draftList[i].name=req.body.name;
+                    user.draftList[i].step=req.body.steps;
+                }
+            }
+        }
+        else
+        {
+            //Add the StepList depends on the namings
+            user.draftList = user.draftList.concat({name:req.body.name, step:req.body.steps});
+
+        }
         user.save(function (err) {
             if (err) throw err;
             return res.send("successfully saved");
         });
+
     });
 };
 
-exports.post_save = function(req, res) {
+exports.post_delete_test_case = function(req, res) {
+    if (req.body.userID)
+    {
+        Users.findOne({ "_id": req.body.userID }, function(err, user) {
+            if (err) {
+                res.send(500);
+                return;
+            }
+
+
+            for (var i = 0; i < user.draftList.length; i++) {
+                if (user.draftList[i]._id===req.body.tcID)
+                {
+                    user.draftList.splice(i, 1)
+                }
+            }
+
+            user.save(function (err) {
+                if (err) throw err;
+                return res.send("successfully saved");
+            });
+
+        });
+    }
     TestCases.remove({ "_id": req.body.id }, function(err, obj) {
         if (err) throw err;
         console.log(" document deleted");
@@ -60,29 +87,43 @@ exports.post_save = function(req, res) {
     });
 };
 
-exports.post_delete_test_case = function(req, res) {
+exports.post_save = function(req, res) {
     TestCases.findOne({ "test_case_name": req.body.name }, function(err, TC) {
         if (err) {
             res.send(500);
             return;
         }
-        if (TC)
-        {
-            res.send("such test case already exists");
-            return;
-        }
-        var _TC = new TestCases();
-        _TC.test_case_name=req.body.name;
-        for (var i=0;i<req.body.steps.lengts;i++)
-        {
-            _TC.steps=_TC.steps.concat({id:req.body.steps[i].id, step:req.body.steps[i].step, prefix:req.body.steps[i].prefix });
-        }
+        if (req.body.tcID) {
+            for (var i = 0; i < TC.length; i++) {
+                if (TC._id===req.body.tcID)
+                {
+                    TC[i].test_case_name=req.body.name;
+                    TC[i].steps = req.body.steps;
 
-        //Add the StepList depends on the namings
+                }
+            }
+        }
+        else
+        {
+            if (TC)
+            {
+                res.send("such test case already exists");
+                return;
+            }
+            var _TC = new TestCases();
+            _TC.test_case_name=req.body.name;
+
+                _TC.steps=req.body.steps;
+
+
+            //Add the StepList depends on the namings
+
+        }
         _TC.save(function (err) {
             if (err) throw err;
             return res.send("successfully saved");
         });
+
     });
 };
 
@@ -96,7 +137,6 @@ exports.validate_test = function(req, res) {
         var result=[];
        // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
         //var DBS= ["somevvhere","Set Volume to number","bole"];
-
         for (var j=0;j<req.body.teststeps.length;j++)
         {
             for (var i=0;i<steps.length;i++)
@@ -112,21 +152,17 @@ exports.validate_test = function(req, res) {
 
             console.log("The file was saved!");
             cmd.get(
-                //------optional change---------------------------
-
-                'C:\\Users\\Edgar\\WebstormProjects\\P9-Keras\\venv\\Scripts\\python.exe C:\\Users\\Edgar\\WebstormProjects\\P9-Keras\\classify.py',
+                'C:\\Users\\Edgar\\WebstormProjects\\P10-Keras\\venv\\Scripts\\python.exe C:\\Users\\Edgar\\WebstormProjects\\P10-Keras\\test.py',
                 function (err, data, stderr) {
                     var lines = data.split('\n');
                     var StepArr=[];
-
-                    //-----------optional change----------------
                     for (var i = 0; i < lines.length; i++)
                     {
                         if(parseFloat(lines[i])<=0.4)
-                    {
-                        StepArr = StepArr.concat({DBStep:steps[i%steps.length], simVal:lines[i]});
-                    }
-                        if (((i+1)%steps.length==0))
+                        {
+                            StepArr = StepArr.concat({DBStep:steps[i%steps.length], simVal:lines[i]});
+                        }
+                        if (((i+1)%steps.length===0))
                         {
                             result = result.concat({userStep:req.body.teststeps[Math.floor(i/steps.length)], stepsInfo:StepArr});
                             StepArr=[];
