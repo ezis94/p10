@@ -11,7 +11,7 @@ const patientCheckAuth = require('../middleware/jwt-token-auth');
 
 router.get('/', apicontroller.api);
 router.get('/testCases', apicontroller.get_test_case_list);
-router.get('/validate',apicontroller.validate_test);
+router.post('/validate',apicontroller.validate_test);
 router.post(
     "/signup",
     passport.authenticate("local-signup", {

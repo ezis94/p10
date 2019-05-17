@@ -12,10 +12,16 @@ const TestInput = require('../model/testInput');
 const Users = require('../model/users');
 
 
+// exports.api = function (req, res) {
+//    res.send(req.user);
+// };
 exports.api = function (req, res) {
-   res.send(req.user);
-};
+    Users.findOne({ "username": req.body.username }, function(err, user) {
+        console.log(user);
+        return res.json(user);
 
+    });
+};
 exports.get_test_case_list = function(req, res) {
     TestCases.find(function (err, data) {
         if (err) {
@@ -34,17 +40,18 @@ exports.post_save_draft = function(req, res) {
         console.log(user);
         if (req.body.tcID) {
             for (var i = 0; i < user.draftList.length; i++) {
-                if (user.draftList[i]._id===req.body.tcID)
+                if (user.draftList[i]._id==req.body.tcID)
                 {
+
                     user.draftList[i].name=req.body.name;
-                    user.draftList[i].step=req.body.steps;
+                    user.draftList[i].step=req.body.step;
                 }
             }
         }
         else
         {
             //Add the StepList depends on the namings
-            user.draftList = user.draftList.concat({name:req.body.name, step:req.body.steps});
+            user.draftList = user.draftList.concat({name:req.body.name, step:req.body.step});
 
         }
         user.save(function (err) {
@@ -66,7 +73,7 @@ exports.post_delete_test_case = function(req, res) {
 
 
             for (var i = 0; i < user.draftList.length; i++) {
-                if (user.draftList[i]._id===req.body.tcID)
+                if (user.draftList[i]._id==req.body.tcID)
                 {
                     user.draftList.splice(i, 1)
                 }
@@ -79,12 +86,16 @@ exports.post_delete_test_case = function(req, res) {
 
         });
     }
-    TestCases.remove({ "_id": req.body.id }, function(err, obj) {
-        if (err) throw err;
-        console.log(" document deleted");
-        return res.send("successfully deleted");
+    else{
+        TestCases.remove({ "_id.$oid": req.body.id }, function(err, obj) {
+            if (err) throw err;
+            console.log(" document deleted");
+            return res.send("successfully deleted");
 
-    });
+        });
+
+    }
+
 };
 
 exports.post_save = function(req, res) {
@@ -93,18 +104,26 @@ exports.post_save = function(req, res) {
             res.send(500);
             return;
         }
-        if (req.body.tcID) {
-            for (var i = 0; i < TC.length; i++) {
-                if (TC._id===req.body.tcID)
-                {
-                    TC[i].test_case_name=req.body.name;
-                    TC[i].steps = req.body.steps;
+        console.log(req.body);
 
-                }
+        if (req.body.tcID) {
+
+            if (TC._id==req.body.tcID)
+            {
+                console.log(TC);
+
+                TC.test_case_name=req.body.name;
+                TC.steps = req.body.steps;
             }
+
+            TC.save(function (err) {
+                if (err) throw err;
+                return res.send("successfully saved");
+            });
         }
         else
         {
+
             if (TC)
             {
                 res.send("such test case already exists");
@@ -115,14 +134,14 @@ exports.post_save = function(req, res) {
 
                 _TC.steps=req.body.steps;
 
-
+            _TC.save(function (err) {
+                if (err) throw err;
+                return res.send("successfully saved");
+            });
             //Add the StepList depends on the namings
 
         }
-        _TC.save(function (err) {
-            if (err) throw err;
-            return res.send("successfully saved");
-        });
+
 
     });
 };
@@ -133,7 +152,7 @@ exports.validate_test = function(req, res) {
             res.send(500);
             return;
         }
-        var RNNfile="";
+        var RNNfile='"question1","question2",\n';
         var result=[];
        // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
         //var DBS= ["somevvhere","Set Volume to number","bole"];
@@ -141,30 +160,59 @@ exports.validate_test = function(req, res) {
         {
             for (var i=0;i<steps.length;i++)
             {
-                RNNfile +=req.body.teststeps[j] + ", " + steps[i] + "\n";
+               // var _steps=JSON.parse(steps);
+                for (var o=0; o<steps[i].variableTypes.length;o++)
+                {
+                    steps[i].definition=steps[i].definition.replace("'(."+o+"*)'",steps[i].variableTypes[o] );
+
+                }
+
+                RNNfile +=req.body.teststeps[j] + ", " + steps[i].definition + "\n";
             }
         }
         //Add the StepList depends on the namings
-        fs.writeFile("C:\\Users\\ezis94\\Desktop\\test.txt", RNNfile, function(err) {
+        fs.writeFile("C:\\Users\\Edgar\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\data\\test.csv", RNNfile, function(err) {
             if(err) {
                 return console.log(err);
             }
 
             console.log("The file was saved!");
             cmd.get(
-                'C:\\Users\\Edgar\\WebstormProjects\\P10-Keras\\venv\\Scripts\\python.exe C:\\Users\\Edgar\\WebstormProjects\\P10-Keras\\test.py',
+                'C:\\Users\\Edgar\\Downloads\\lstm-siamese-text-similarity-master\\lstm-siamese-text-similarity-master\\venv\\Scripts\\python.exe ' +
+                'C:\\Users\\Edgar\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\predict.py',
                 function (err, data, stderr) {
+
                     var lines = data.split('\n');
                     var StepArr=[];
+                  //  console.log(lines);
                     for (var i = 0; i < lines.length; i++)
                     {
-                        if(parseFloat(lines[i])<=0.4)
+                        if (lines[i].includes("distance"))
                         {
-                            StepArr = StepArr.concat({DBStep:steps[i%steps.length], simVal:lines[i]});
+                            lines.splice(0, i);
+                            break;
+
+                        }
+                    }
+                    lines.splice(lines.length-1, lines.length);
+
+                    //console.log(lines.length);
+                   //sole.log(lines);
+
+                    for (var i = 0; i < lines.length; i++)
+                    {
+                        console.log(parseFloat(lines[i].substring(11,lines[i].length)));
+                        if(parseFloat(lines[i].substring(11,lines[i].length))>=0.5)
+                        {
+                            console.log(i%steps.length);
+                            console.log(steps[i%steps.length].definition);
+                            StepArr = StepArr.concat({DBStep:steps[i%steps.length].definition, simVal:parseFloat(lines[i].substring(11,lines[i].length))});
+                            console.log(req.body.teststeps[Math.floor(i/steps.length)]);
                         }
                         if (((i+1)%steps.length===0))
                         {
-                            result = result.concat({userStep:req.body.teststeps[Math.floor(i/steps.length)], stepsInfo:StepArr});
+                            result = result.concat({userStep:req.body.teststeps
+                                    [Math.floor(i/steps.length)], stepsInfo:StepArr});
                             StepArr=[];
                         }
                     }
@@ -351,3 +399,4 @@ exports.get_test_case_lists = function (req, res) {
 // 	        });
 // 	};
 //
+

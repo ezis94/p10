@@ -23,7 +23,7 @@ var userSchema = mongoose.Schema({
                     state:String,
                     variable:[
                         {
-                            type:String,
+                            _type:String,
                             value:String
                         }
                     ]
