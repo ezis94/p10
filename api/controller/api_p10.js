@@ -181,10 +181,8 @@ exports.validate_test = function(req, res) {
                 'C:\\Users\\Edgar\\Downloads\\lstm-siamese-text-similarity-master\\lstm-siamese-text-similarity-master\\venv\\Scripts\\python.exe ' +
                 'C:\\Users\\Edgar\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\predict.py',
                 function (err, data, stderr) {
-
                     var lines = data.split('\n');
                     var StepArr=[];
-                  //  console.log(lines);
                     for (var i = 0; i < lines.length; i++)
                     {
                         if (lines[i].includes("distance"))
@@ -195,10 +193,6 @@ exports.validate_test = function(req, res) {
                         }
                     }
                     lines.splice(lines.length-1, lines.length);
-
-                    //console.log(lines.length);
-                   //sole.log(lines);
-
                     for (var i = 0; i < lines.length; i++)
                     {
                         console.log(parseFloat(lines[i].substring(11,lines[i].length)));
@@ -206,7 +200,7 @@ exports.validate_test = function(req, res) {
                         {
                             console.log(i%steps.length);
                             console.log(steps[i%steps.length].definition);
-                            StepArr = StepArr.concat({DBStep:steps[i%steps.length].definition, simVal:parseFloat(lines[i].substring(11,lines[i].length))});
+                            StepArr = StepArr.concat({DBStep:steps[i%steps.length].definition,Vars:steps[i%steps.length].variableTypes,simVal:parseFloat(lines[i].substring(11,lines[i].length))});
                             console.log(req.body.teststeps[Math.floor(i/steps.length)]);
                         }
                         if (((i+1)%steps.length===0))
@@ -337,6 +331,10 @@ exports.get_test_case_lists = function (req, res) {
     res.json(array)
 };
 
+exports.logout = function (req, res) {
+    req.logout();
+    res.send("logout");
+};
 //     exports.patient_sign_up     = (req, res, next) => {
 //
 //         bcryptjs.hash(req.body.password, 10, (err, hash) => {

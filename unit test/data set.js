@@ -1,0 +1,20 @@
+
+const fs = require("fs");
+
+var array = ["Press Bottom Menu item",
+    "Click on Bottom Menu item button","I click on specific button at the bottom","I press the specific option","I press on Bottom Menu button","I swipe left to specific program","Swipe left to access program specific","I swipe the specific card to the left","I swipe specific tile left","I swipe left to get to program program","Validate Left/Right HI in Status Page","Verify that Hearing Aids are connected","two hearing aids are seen connected ,Left and Right","Both hearing aids are connected - left and right","Press on Sound Enhancer in program specific","I click on Sound Enhancer on specific program","I press Sound Enhancer button on specific program","Tap on Sound enhancer on program program","I Select Top Ribbon program specific","Click on specific program in Top Overview","I press on the specific Tile in Top Tile list","I press specific on Top carousell","I select specific in Top Menu Bar","I Press Top Ribbon program specific","I press program program on Top Ribbon Carousell","Select Program Overview on top ribbon bar","I press on Program Overview button","I tap Program Overview button","I press on drop down button Program Overview","Click on Program Overview button","I press on Program Overview button","I press Program Overview button on top ribbon bar","I divide hearing aid volume on specific program","Click the split button on specific program","I press on split bars icon in specific program","I press on the split volume bar button on specific program","I press split on volume bar in specific program","I split hearing aid volume bar in program program","I press split hearing aid volume on specific program","I press program card on specific program","I click on card of a specific program","I press on program card in program program","I tap program card on specific program","Swipe right to access program specific","I swipe the specific card to the right","I swipe specific tile right","Swipe right to go to program program","I swipe right to specific program","I go to Tinnitus Manager","I click on Tinnitus manager button","I tap Tinnitus Manager","I press Tinnitus Manager","Select Exit to demo button","I click Exit to Demo","I go to Exit to Demo mode","I press Exit to Demo mode","I tap Exit to Demo mode button","Select Exit to demo button","I set hearing aid sound to number on left volume bar of specific program","Drag the right slider to change the volume of specific card to a number","I change the right volume of specific card to a number","I set the left hearing aid volume to volume in program program","I set hearing aid volume to number on left volume bar of specific program","I set hearing aid sound to number on right volume bar of specific program","Drag the right slider to change the volume of specific card to a number","I change the right volume of specific card to a number","The right hearing aid volueme is set to volume in program program","I set hearing aid volume to number on right volume bar of specific program","Click mute to merged streamer volume on specific program","I click the mute button on specific program","I press speaker button to mute HIs in specific program","I mute volume slider in specific program","I mute the merged streamer volume in program program","I press mute to merged streamer volume on specific program","I press more menu item specific","Press on 'More menu' item specific","Click on specific option in more menu","I press on specific tab in more menu","I go to specific page in more menu","I press item more menu item","I press more menu item specific"]
+
+var result ="";
+for (var j=0;j<array.length;j++)
+{
+    for (var i=j;i<array.length;i++)
+    {
+        result +=array[j] + ", " + array[i] + ",0\n";
+    }
+}
+//Add the StepList depends on the namings
+fs.writeFile("C:\\Users\\Edgar\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\data\\newthing.csv", result, function(err) {
+    if (err) {
+        return console.log(err);
+    }
+});
