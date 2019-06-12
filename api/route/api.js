@@ -11,26 +11,46 @@ const patientCheckAuth = require('../middleware/jwt-token-auth');
 
 router.get('/', apicontroller.api);
 router.get('/testCases', apicontroller.get_test_case_list);
+router.get('/testCase/:id', apicontroller.get_test_case_id);
+router.get('/testCasesDraft', apicontroller.get_test_case_list_draft);
 router.post('/validate',apicontroller.validate_test);
-router.post(
-    "/signup",
-    passport.authenticate("local-signup", {
-        successRedirect: "/",
-        failureRedirect: "/signup",
-        failureFlash: true
-    })
+
+// router.post(
+//     "/signup",(req, res, next) =>{
+//     passport.authenticate("local-signup", (err, user) => {
+//         res.send('sdsd')
+//     })(req, res, next);
+// }
+//
+// );
+router.post("/signup", //console.log(req);
+    passport.authenticate('local-signup'), function (req, res) {
+        console.log(res);
+        res.json({userID:res.req.user._id, draftList:res.req.user.draftList});
+       // res.send("oioi");
+    }
+    // res.send("dsdfaa");
 );
-router.post(
-    "/login",
-    passport.authenticate("local-login", {
-        successRedirect: "/",
-        failureRedirect: "/login",
-        failureFlash: true
-    })
+router.post("/login", //console.log(req);
+    passport.authenticate('local-login'), function (req, res) {
+        console.log(res);
+         res.json({userID:res.req.user._id, draftList:res.req.user.draftList});
+       // res.send("oioi");
+    }
+    // res.send("dsdfaa");
 );
+// router.post(
+//     "/login",
+//     passport.authenticate("local-login", {
+//         successRedirect: "/",
+//         failureRedirect: "/login",
+//         failureFlash: true
+//     })
+// );
+
 router.get("/logout", apicontroller.logout);
 router.post('/saveDraft',apicontroller.post_save_draft);
-router.post('/save',apicontroller.post_save);
-router.post('/deleteTestCase',apicontroller.post_delete_test_case);
+router.post('/testCases',apicontroller.post_save);
+router.delete('/deleteTestCase',apicontroller.post_delete_test_case);
 
 module.exports = router;

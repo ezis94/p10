@@ -11,7 +11,7 @@ module.exports = function(passport) {
         Users.findById(id, function(err, user) {
             if (user) done(err, user);
             else
-                Console.log("unfrtunate");
+                console.log("unfrtunate");
         });
     });
 
@@ -27,11 +27,10 @@ module.exports = function(passport) {
                     if (err) return done(err);
                     if (user) {
                         console.log("no such user");
-                        return done(
-                            null,
-                            false,
-                            req.flash("signupMessage", "That username already exists.")
-                        );
+                        var newUser = new Users();
+                        //newUser.username="error: user exists";
+                    //    newUser._id=null;
+                        return done(null, newUser);
                     }
                     else {
                         console.log("message");

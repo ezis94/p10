@@ -63,13 +63,8 @@ module.exports = function(passport) {
   passport.use(
     "local-signup",
     new LocalStrategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
-
-        passReqToCallback: true
-      },
-      function(req, email, password, done) {
+      function(email, password, done) {
+          console.log("dsadsfsd");
        var   role="";
        var car_id;
         process.nextTick(function() {
@@ -77,11 +72,9 @@ module.exports = function(passport) {
                 if (err) return done(err);
                 if (user) {
                     console.log("no user");
-                    return done(
-                        null,
-                        false,
-                        req.flash("signupMessage", "That email is already taken.")
-                    );
+                    console.log(user);
+                    var newUser = new User();
+                    return done(null,newUser);
                 } else {
 
                     console.log("in saving user");

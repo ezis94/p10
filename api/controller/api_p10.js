@@ -31,6 +31,34 @@ exports.get_test_case_list = function(req, res) {
         return res.json(data);
     });
 };
+
+exports.get_test_case_id = function(req, res) {
+    TestCases.findOne({_id: req.params.id}, function (err, data) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        return res.json(data);
+    });
+};
+exports.get_test_case_list_draft = function(req, res) {
+    var _id = req.body._id
+    var id = '5cfff253f3a46c29e48813f0';
+
+    Users.find({'_id': '5cfff253f3a46c29e48813f0'}, function (err, data) {
+        if (err) {
+            res.send(404);
+            return;
+        }
+
+        // console.log("mao data:" + data)
+        return res.json(data);
+        // return res.status(200).json(data);
+    });
+};
+
+
+
 exports.post_save_draft = function(req, res) {
     Users.findOne({ "_id": req.body.id }, function(err, user) {
         if (err) {
@@ -62,6 +90,7 @@ exports.post_save_draft = function(req, res) {
     });
 };
 
+
 exports.post_delete_test_case = function(req, res) {
     if (req.body.userID)
     {
@@ -87,11 +116,17 @@ exports.post_delete_test_case = function(req, res) {
         });
     }
     else{
-        TestCases.remove({ "_id.$oid": req.body.id }, function(err, obj) {
-            if (err) throw err;
-            console.log(" document deleted");
-            return res.send("successfully deleted");
+        // TestCases.findOne({ "_id": req.body.userID }, function(err, obj) {
+        //     obj.remove(_id);
+        // });
 
+        // const id = req.params.productId;
+        // Patient.remove({_id: id})
+        TestCases.findOneAndRemove({ "_id.$oid": req.body.id }, function(err, obj) {
+            // obj.remove()
+            if (err) throw err;
+            console.log(" document deleted" + req.body.id);
+            return res.send("successfully deleted: " + obj);
         });
 
     }
@@ -113,7 +148,8 @@ exports.post_save = function(req, res) {
                 console.log(TC);
 
                 TC.test_case_name=req.body.name;
-                TC.steps = req.body.steps;
+                for(var i=0;i<req.body.steps;i++)
+                    TC.steps.push(req.body.steps[i]);
             }
 
             TC.save(function (err) {
@@ -132,7 +168,7 @@ exports.post_save = function(req, res) {
             var _TC = new TestCases();
             _TC.test_case_name=req.body.name;
 
-                _TC.steps=req.body.steps;
+            _TC.steps=req.body.steps;
 
             _TC.save(function (err) {
                 if (err) throw err;
@@ -154,13 +190,13 @@ exports.validate_test = function(req, res) {
         }
         var RNNfile='"question1","question2",\n';
         var result=[];
-       // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
+        // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
         //var DBS= ["somevvhere","Set Volume to number","bole"];
         for (var j=0;j<req.body.teststeps.length;j++)
         {
             for (var i=0;i<steps.length;i++)
             {
-               // var _steps=JSON.parse(steps);
+                // var _steps=JSON.parse(steps);
                 for (var o=0; o<steps[i].variableTypes.length;o++)
                 {
                     steps[i].definition=steps[i].definition.replace("'(."+o+"*)'",steps[i].variableTypes[o] );
@@ -397,4 +433,3 @@ exports.logout = function (req, res) {
 // 	        });
 // 	};
 //
-

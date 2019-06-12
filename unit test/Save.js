@@ -8,7 +8,7 @@ var toSave={
         step:"User is in Demo mode",
         prefix:"Given"
     }]}
-request.post('http://localhost:4000/api/save', {
+request.post('http://localhost:4000/api/testCases', {
     json: toSave
 }, (error, res, body) => {
     if (error) {
