@@ -42,10 +42,10 @@ exports.get_test_case_id = function(req, res) {
     });
 };
 exports.get_test_case_list_draft = function(req, res) {
-    var _id = req.body._id
+    var _id = req.query._id
     var id = '5cfff253f3a46c29e48813f0';
-
-    Users.find({'_id': '5cfff253f3a46c29e48813f0'}, function (err, data) {
+    console.log(req);
+    Users.find({'_id': _id}, function (err, data) {
         if (err) {
             res.send(404);
             return;
@@ -92,9 +92,9 @@ exports.post_save_draft = function(req, res) {
 
 
 exports.post_delete_test_case = function(req, res) {
-    if (req.body.userID)
+    if (req.query.userID)
     {
-        Users.findOne({ "_id": req.body.userID }, function(err, user) {
+        Users.findOne({ "_id": req.query.userID }, function(err, user) {
             if (err) {
                 res.send(500);
                 return;
@@ -102,7 +102,7 @@ exports.post_delete_test_case = function(req, res) {
 
 
             for (var i = 0; i < user.draftList.length; i++) {
-                if (user.draftList[i]._id==req.body.tcID)
+                if (user.draftList[i]._id==req.query.tcID)
                 {
                     user.draftList.splice(i, 1)
                 }
@@ -122,10 +122,11 @@ exports.post_delete_test_case = function(req, res) {
 
         // const id = req.params.productId;
         // Patient.remove({_id: id})
-        TestCases.findOneAndRemove({ "_id.$oid": req.body.id }, function(err, obj) {
+        console.log(req);
+        TestCases.findOneAndRemove({ "_id": req.query._id }, function(err, obj) {
             // obj.remove()
             if (err) throw err;
-            console.log(" document deleted" + req.body.id);
+            console.log(" document deleted" + req.query._id);
             return res.send("successfully deleted: " + obj);
         });
 
