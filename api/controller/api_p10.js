@@ -191,32 +191,33 @@ exports.validate_test = function(req, res) {
         }
         var RNNfile='"question1","question2",\n';
         var result=[];
+        var stepTxt=steps;
         // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
         //var DBS= ["somevvhere","Set Volume to number","bole"];
         for (var j=0;j<req.body.testSteps.length;j++)
         {
-            for (var i=0;i<steps.length;i++)
+            for (var i=0;i<stepTxt.length;i++)
             {
                 // var _steps=JSON.parse(steps);
-                for (var o=0; o<steps[i].variableTypes.length;o++)
+                for (var o=0; o<stepTxt[i].variableTypes.length;o++)
                 {
-                    steps[i].definition=steps[i].definition.replace("'(."+o+"*)'",steps[i].variableTypes[o] );
+                    stepTxt[i].definition=stepTxt[i].definition.replace("'(."+o+"*)'",stepTxt[i].variableTypes[o] );
 
                 }
 
-                RNNfile +=req.body.testSteps[j].testStepName + ", " + steps[i].definition + "\n";
+                RNNfile +=req.body.testSteps[j].testStepName + ", " + stepTxt[i].definition + "\n";
             }
         }
         //Add the StepList depends on the namings
-        fs.writeFile("C:\\Users\\Edgar\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\data\\test.csv", RNNfile, function(err) {
+        fs.writeFile("C:\\Users\\Marius\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\data\\test.csv", RNNfile, function(err) {
             if(err) {
                 return console.log(err);
             }
 
             console.log("The file was saved!");
             cmd.get(
-                'C:\\Users\\Edgar\\Downloads\\lstm-siamese-text-similarity-master\\lstm-siamese-text-similarity-master\\venv\\Scripts\\python.exe ' +
-                'C:\\Users\\Edgar\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\predict.py',
+                'C:\\Users\\Marius\\Downloads\\lstm-siamese-text-similarity-master\\lstm-siamese-text-similarity-master\\venv\\Scripts\\python.exe ' +
+                'C:\\Users\\Marius\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\predict.py',
                 function (err, data, stderr) {
                     console.log(data);
 
@@ -247,15 +248,15 @@ exports.validate_test = function(req, res) {
                         console.log((i+1)%steps.length);
                         if (((i+1)%steps.length===0))
                         {
-                            result = result.concat({testStepName:req.body.testSteps
-                                    [Math.floor(i/steps.length)].testStepName, prefixName:req.body.testSteps[Math.floor(i/steps.length)].prefix
+                            result = result.concat({id:uid(10),testStepName:req.body.testSteps
+                                    [Math.floor(i/steps.length)].testStepName, prefixName:req.body.testSteps[Math.floor(i/steps.length)].prefixName
                                     , steps:StepArr});
                             console.log(result);
 
                             StepArr=[];
                         }
                     }
-                    res.json({result});
+                    res.json({"result":result, "name":req.body.name});
                 }
             );
         });
