@@ -21,10 +21,10 @@ request.post('http://localhost:4000/api/validate', {
     try {
         assert.equal(body[0].userStep, "I press Exit to demo button");
         assert.equal(body[0].stepsInfo[0].DBStep, "I press Exit to demo button" );
-        assert.equal(parseFloat(body[0].stepsInfo[0].simVal)>=0.6,true  );
+        assert.equal(parseFloat(body[0].stepsInfo[0].simVal)>=0.5,true  );
         assert.equal(body[1].userStep, "I swipe left to get to All-Around program");
         assert.equal(body[1].stepsInfo[0].DBStep, "I swipe left to program program" );
-        assert.equal(parseFloat(body[1].stepsInfo[0].simVal)>=0.6,true  );
+        assert.equal(parseFloat(body[1].stepsInfo[0].simVal)>=0.5,true  );
 
 
         console.log('The saving was successful.');

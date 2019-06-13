@@ -9,7 +9,7 @@ request.get('http://localhost:4000/api/testCases',(error, res, body) => {
     console.log(`statusCode: ${res.statusCode}`)
     console.log(body)
     var TC=body;
-    request.post('http://localhost:4000/api/deleteTestCase', {
+    request.delete('http://localhost:4000/api/deleteTestCase', {
         json: {id:TC[0]._id}
     }, (error, res, body) => {
         if (error) {
