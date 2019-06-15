@@ -100,7 +100,6 @@ exports.post_delete_test_case = function(req, res) {
                 return;
             }
 
-
             for (var i = 0; i < user.draftList.length; i++) {
                 if (user.draftList[i]._id==req.query.tcID)
                 {
@@ -140,7 +139,7 @@ exports.post_save = function(req, res) {
             res.send(500);
             return;
         }
-        console.log(req.body);
+       // console.log(req.body);
 
         if (req.body.tcID) {
 
@@ -192,15 +191,23 @@ exports.validate_test = function(req, res) {
         var RNNfile='"question1","question2",\n';
         var result=[];
         var stepTxt=steps;
+        var resultSteps=[];
+        for (var o=0; o<stepTxt.length;o++)
+        {
+            resultSteps[o]=steps[o].definition;
+        }
         // var userS= ["USer is in somevvhere","Volume set to 9","lole"];
         //var DBS= ["somevvhere","Set Volume to number","bole"];
         for (var j=0;j<req.body.testSteps.length;j++)
         {
             for (var i=0;i<stepTxt.length;i++)
             {
+
                 // var _steps=JSON.parse(steps);
                 for (var o=0; o<stepTxt[i].variableTypes.length;o++)
                 {
+                    resultSteps[i]=resultSteps[i].replace("'(."+o+"*)'","'(.*)'" );
+                    console.log(resultSteps[i] + "   -------------------------");
                     stepTxt[i].definition=stepTxt[i].definition.replace("'(."+o+"*)'",stepTxt[i].variableTypes[o] );
 
                 }
@@ -241,9 +248,10 @@ exports.validate_test = function(req, res) {
                         if(parseFloat(lines[i].substring(11,lines[i].length))>=0.5)
                         {
                             console.log(i%steps.length);
-                            console.log(steps[i%steps.length].definition);
-                            StepArr = StepArr.concat({id:uid(10), step:steps[i%steps.length].definition,variables:steps[i%steps.length].variableTypes,simVal:parseFloat(lines[i].substring(11,lines[i].length))});
-                            console.log(req.body.testSteps[Math.floor(i/steps.length)]);
+                            console.log(resultSteps[i%steps.length] + "    --------------------------");
+                            StepArr = StepArr.concat({id:uid(10), step:resultSteps[i%steps.length],variables:steps[i%steps.length].variableTypes,simVal:parseFloat(lines[i].substring(11,lines[i].length))});
+
+                         //   console.log(req.body.testSteps[Math.floor(i/steps.length)]);
                         }
                         console.log((i+1)%steps.length);
                         if (((i+1)%steps.length===0))
@@ -251,7 +259,7 @@ exports.validate_test = function(req, res) {
                             result = result.concat({id:uid(10),testStepName:req.body.testSteps
                                     [Math.floor(i/steps.length)].testStepName, prefixName:req.body.testSteps[Math.floor(i/steps.length)].prefixName
                                     , steps:StepArr});
-                            console.log(result);
+                          //  console.log(result);
 
                             StepArr=[];
                         }
