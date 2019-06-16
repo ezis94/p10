@@ -13,7 +13,11 @@ router.get('/', apicontroller.api);
 router.get('/testCases', apicontroller.get_test_case_list);
 router.get('/testCase/:id', apicontroller.get_test_case_id);
 router.get('/testCasesDraft', apicontroller.get_test_case_list_draft);
+router.get('/testCaseDraft', apicontroller.get_test_case_draft_id);
 router.post('/validate',apicontroller.validate_test);
+router.post('/edit',apicontroller.post_edit);
+router.post('/editDraft',apicontroller.post_edit_draft);
+
 
 // router.post(
 //     "/signup",(req, res, next) =>{

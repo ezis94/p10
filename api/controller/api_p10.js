@@ -17,7 +17,7 @@ const Users = require('../model/users');
 // };
 exports.api = function (req, res) {
     Users.findOne({ "username": req.body.username }, function(err, user) {
-        console.log(user);
+        // console.log(user);
         return res.json(user);
 
     });
@@ -41,10 +41,34 @@ exports.get_test_case_id = function(req, res) {
         return res.json(data);
     });
 };
+
+exports.get_test_case_draft_id = function(req, res) {
+    var _id = req.query.userID;
+    Users.findOne({'_id': _id}, function (err, data) {
+        if (err) {
+            res.send(404);
+            return;
+        }
+
+        if(data){
+            for (var i = 0; i < data.draftList.length; i++) {
+                if (data.draftList[i]._id==req.query.tcID)
+                {
+                    return res.json(data.draftList[i]);
+                }
+            }
+            return res.send("no test case found")
+        }
+        else
+            return res.send("no user found")
+    });
+    //return res.send("no params")
+};
+
 exports.get_test_case_list_draft = function(req, res) {
     var _id = req.query._id
     var id = '5cfff253f3a46c29e48813f0';
-    console.log(req);
+    // console.log(req);
     Users.find({'_id': _id}, function (err, data) {
         if (err) {
             res.send(404);
@@ -57,6 +81,30 @@ exports.get_test_case_list_draft = function(req, res) {
     });
 };
 
+exports.post_edit_draft = function(req, res) {
+    Users.findOne({ "_id": req.body.id }, function(err, user) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        // console.log(user);
+        if (req.body.tcID) {
+            for (var i = 0; i < user.draftList.length; i++) {
+                if (user.draftList[i]._id==req.body.tcID)
+                {
+                    user.draftList[i].name=req.body.name;
+                    user.draftList[i].step=req.body.step;
+                }
+            }
+        }
+        user.save(function (err) {
+            if (err) throw err;
+            return res.send("successfully saved");
+        });
+
+    });
+};
+
 
 
 exports.post_save_draft = function(req, res) {
@@ -65,23 +113,13 @@ exports.post_save_draft = function(req, res) {
             res.send(500);
             return;
         }
-        console.log(user);
-        if (req.body.tcID) {
-            for (var i = 0; i < user.draftList.length; i++) {
-                if (user.draftList[i]._id==req.body.tcID)
-                {
+        // console.log(user);
 
-                    user.draftList[i].name=req.body.name;
-                    user.draftList[i].step=req.body.step;
-                }
-            }
-        }
-        else
-        {
+
             //Add the StepList depends on the namings
-            user.draftList = user.draftList.concat({name:req.body.name, step:req.body.step});
+        user.draftList = user.draftList.concat({name:req.body.name, step:req.body.step});
 
-        }
+
         user.save(function (err) {
             if (err) throw err;
             return res.send("successfully saved");
@@ -121,7 +159,7 @@ exports.post_delete_test_case = function(req, res) {
 
         // const id = req.params.productId;
         // Patient.remove({_id: id})
-        console.log(req);
+        // console.log(req);
         TestCases.findOneAndRemove({ "_id": req.query._id }, function(err, obj) {
             // obj.remove()
             if (err) throw err;
@@ -134,6 +172,8 @@ exports.post_delete_test_case = function(req, res) {
 };
 
 exports.post_save = function(req, res) {
+
+
     TestCases.findOne({ "test_case_name": req.body.name }, function(err, TC) {
         if (err) {
             res.send(500);
@@ -141,47 +181,60 @@ exports.post_save = function(req, res) {
         }
        // console.log(req.body);
 
-        if (req.body.tcID) {
 
-            if (TC._id==req.body.tcID)
-            {
-                console.log(TC);
 
-                TC.test_case_name=req.body.name;
-                for(var i=0;i<req.body.steps;i++)
-                    TC.steps.push(req.body.steps[i]);
-            }
 
-            TC.save(function (err) {
-                if (err) throw err;
-                return res.send("successfully saved");
-            });
-        }
-        else
+        if (TC)
         {
-
-            if (TC)
-            {
-                res.send("such test case already exists");
-                return;
-            }
-            var _TC = new TestCases();
-            _TC.test_case_name=req.body.name;
-
-            _TC.steps=req.body.steps;
-
-            _TC.save(function (err) {
-                if (err) throw err;
-                return res.send("successfully saved");
-            });
-            //Add the StepList depends on the namings
-
+            res.send("such test case already exists");
+            return;
         }
+        var _TC = new TestCases();
+        _TC.test_case_name=req.body.name;
+
+        _TC.steps=req.body.steps;
+
+        _TC.save(function (err) {
+            if (err) throw err;
+            return res.send("successfully saved");
+        });
+        //Add the StepList depends on the namings
+
 
 
     });
 };
+exports.post_edit = function(req, res) {
 
+
+    TestCases.findOne({ "_id": req.body.tcID }, function(err, TC) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+        // console.log(req.body);
+
+
+
+        if (TC._id==req.body.tcID)
+        {
+            console.log(TC);
+
+            TC.test_case_name=req.body.name;
+            TC.steps=req.body.steps;
+            // for(var i=0;i<req.body.steps;i++)
+            //     TC.steps.concat(req.body.steps[i]);
+        }
+
+        TC.save(function (err) {
+            if (err) throw err;
+            return res.send("successfully saved");
+        });
+
+
+
+    });
+};
 exports.validate_test = function(req, res) {
     TestSteps.find( function(err, steps) {
         if (err) {
@@ -207,7 +260,7 @@ exports.validate_test = function(req, res) {
                 for (var o=0; o<stepTxt[i].variableTypes.length;o++)
                 {
                     resultSteps[i]=resultSteps[i].replace("'(."+o+"*)'","'(.*)'" );
-                    console.log(resultSteps[i] + "   -------------------------");
+                    // console.log(resultSteps[i] + "   -------------------------");
                     stepTxt[i].definition=stepTxt[i].definition.replace("'(."+o+"*)'",stepTxt[i].variableTypes[o] );
 
                 }
@@ -218,15 +271,15 @@ exports.validate_test = function(req, res) {
         //Add the StepList depends on the namings
         fs.writeFile("C:\\Users\\Marius\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\data\\test.csv", RNNfile, function(err) {
             if(err) {
-                return console.log(err);
+                // return console.log(err);
             }
 
-            console.log("The file was saved!");
+            // console.log("The file was saved!");
             cmd.get(
                 'C:\\Users\\Marius\\Downloads\\lstm-siamese-text-similarity-master\\lstm-siamese-text-similarity-master\\venv\\Scripts\\python.exe ' +
                 'C:\\Users\\Marius\\Downloads\\Siamese-LSTM-text-similarity-master\\Siamese-LSTM-text-similarity-master\\predict.py',
                 function (err, data, stderr) {
-                    console.log(data);
+                    // console.log(data);
 
                     var lines = data.split('\n');
                     var StepArr=[];
@@ -240,20 +293,20 @@ exports.validate_test = function(req, res) {
                         }
                     }
                     lines.splice(lines.length-1, lines.length);
-                    console.log(lines.length);
+                    // console.log(lines.length);
 
                     for (var i = 0; i < lines.length; i++)
                     {
-                        console.log(parseFloat(lines[i].substring(11,lines[i].length)));
+                        // console.log(parseFloat(lines[i].substring(11,lines[i].length)));
                         if(parseFloat(lines[i].substring(11,lines[i].length))>=0.5)
                         {
-                            console.log(i%steps.length);
-                            console.log(resultSteps[i%steps.length] + "    --------------------------");
+                            // console.log(i%steps.length);
+                            // console.log(resultSteps[i%steps.length] + "    --------------------------");
                             StepArr = StepArr.concat({id:uid(10), step:resultSteps[i%steps.length],variables:steps[i%steps.length].variableTypes,simVal:parseFloat(lines[i].substring(11,lines[i].length))});
 
                          //   console.log(req.body.testSteps[Math.floor(i/steps.length)]);
                         }
-                        console.log((i+1)%steps.length);
+                        // console.log((i+1)%steps.length);
                         if (((i+1)%steps.length===0))
                         {
                             result = result.concat({id:uid(10),testStepName:req.body.testSteps
