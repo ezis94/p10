@@ -298,7 +298,7 @@ exports.validate_test = function(req, res) {
                     for (var i = 0; i < lines.length; i++)
                     {
                         // console.log(parseFloat(lines[i].substring(11,lines[i].length)));
-                        if(parseFloat(lines[i].substring(11,lines[i].length))>=0.5)
+                        if(parseFloat(lines[i].substring(11,lines[i].length))>=0.6)
                         {
                             // console.log(i%steps.length);
                             // console.log(resultSteps[i%steps.length] + "    --------------------------");
@@ -317,6 +317,7 @@ exports.validate_test = function(req, res) {
                             StepArr=[];
                         }
                     }
+                    console.log(result);
                     res.json({"result":result, "name":req.body.name});
                 }
             );
